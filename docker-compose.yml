@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mars-weather-app:
+    container_name: mars-weather-app
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mars-weather-db
+    environment:
+      - KEY=CYcagejUv3tJwTfEQMWxrF2ALnkVm87RP5hNybHZBDXdGu9zsK
+      - DATABASE_URL=postgresql://mars:pass@mars-weather-db:5432/weather
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: "npm run dev"
+
+  mars-weather-db:
+    image: postgres
+    container_name: mars-weather-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: mars
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: weather
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
