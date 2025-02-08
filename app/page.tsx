@@ -18,31 +18,51 @@ export default function Home() {
 		}, 5000)
 	}, []);
 
-	const [navbarOpen, setNavbarOpen] = useState(false);
-	const [selectedItem, setSelectedItem] = useState<string>("data");
+	const [navbarOpen, setNavbarOpen] = useState(true); // TODO: Default false
+	const [selectedItem, setSelectedItem] = useState<string>("station");
 
-	const iconSize = 55
 	return (
 		<main className={"flex flex-row"}>
 			<div id={"nav"} className={"flex flex-row gap-x-2 h-[100vh] p-2 items-start"}>
 				<div className={"flex flex-col gap-y-4"}>
-					<button onClick={() => setNavbarOpen(!navbarOpen)}>
-						<Image
-							src={"/favicon.png"}
-							alt={"Mars"}
-							className={"hover:bg-[#474747] rounded-md p-1"}
-							width={iconSize}
-							height={iconSize}/>
-					</button>
-					<NavIcon id={"reagent-bottle"} />
-					<NavIcon id={"wind"} />
-					<NavIcon id={"earthquake"} />
+					<NavIcon id={"favicon.png"} callback={() => setNavbarOpen(!navbarOpen)} />
+					<NavIcon id={"station.svg"} callback={() => {
+						if(selectedItem == "station") setNavbarOpen(!navbarOpen)
+						else {
+							setNavbarOpen(true)
+							setSelectedItem("station")
+						}
+					}} />
+					<NavIcon id={"reagent-bottle.svg"} callback={() => {
+						if(selectedItem == "data") setNavbarOpen(!navbarOpen)
+						else {
+							setNavbarOpen(true)
+							setSelectedItem("data")
+						}
+					}} />
+					<NavIcon id={"wind.svg"} callback={() => {
+						if(selectedItem == "wind") setNavbarOpen(!navbarOpen)
+						else {
+							setNavbarOpen(true)
+							setSelectedItem("wind")
+						}
+					}} />
+					<NavIcon id={"earthquake.svg"} callback={() => {
+						if(selectedItem == "earthquake") setNavbarOpen(!navbarOpen)
+						else {
+							setNavbarOpen(true)
+							setSelectedItem("earthquake")
+						}
+					}} />
 				</div>
 				{
 					navbarOpen && (
 						<div className={"flex flex-col gap-y-2"}>
-							<h1 className={`text-3xl font-bold`}>MarsWeather</h1>
-							<p>test</p>
+							<h1 className={`text-3xl font-bold text-center`}>Mars Weather</h1>
+							{ selectedItem == "station" && <StationInfoPanel /> }
+							{ selectedItem == "data" && <DataInfoPanel /> }
+							{ selectedItem == "wind" && <WindInfoPanel /> }
+							{ selectedItem == "earthquake" && <EarthquakeInfoPanel /> }
 						</div>
 					)
 				}
@@ -51,24 +71,50 @@ export default function Home() {
 	);
 }
 
-function NavIcon({ id, callback }: { id: string, callback: () => Promise<void> | undefined }) {
+function NavIcon({ id, callback }: { id: string, callback: () => void }) {
 
 	const iconSize = 55
 
 	return (
-		<Image
-			src={`/${id}.svg`}
-			alt={id.toUpperCase()}
-			className={"hover:bg-[#474747] rounded-md p-1"}
-			width={iconSize}
-			height={iconSize} />
+		<button onClick={callback}>
+			<Image
+				src={`/${id}`}
+				alt={id.toUpperCase()}
+				className={"hover:bg-[#474747] rounded-md p-1"}
+				width={iconSize}
+				height={iconSize} />
+		</button>
+	)
+}
+
+function StationInfoPanel() {
+	return (
+		<>
+			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Station Info</h1>
+		</>
+	)
+}
+
+function DataInfoPanel() {
+	return (
+		<>
+			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>General Info</h1>
+		</>
 	)
 }
 
 function WindInfoPanel() {
 	return (
 		<>
+			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Wind Info</h1>
+		</>
+	)
+}
 
+function EarthquakeInfoPanel() {
+	return (
+		<>
+			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Earthquake Info</h1>
 		</>
 	)
 }

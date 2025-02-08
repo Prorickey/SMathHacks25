@@ -68,7 +68,7 @@ export async function GET(req: Request, res: Response) {
 				orderBy: {
 					timeTaken: "desc"
 				},
-				take: 10
+				take: 100
 			}
 		}
 	})
