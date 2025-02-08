@@ -34,6 +34,48 @@ export interface WeatherStationPayload {
 	}
 }
 
+export interface WeatherStation {
+	id: string
+	name: string
+	weatherData: WeatherData[]
+}
+
+export interface WeatherData {
+	latitude: number
+	longitude: number
+	pressure: number
+	temperature: number
+	humidity: number
+	co2: number
+	dust: number
+	wind: number
+	light: number
+	accellX: number
+	accellY: number
+	accellZ: number
+	angVelX: number
+	angVelY: number
+	angVelZ: number
+	timeTaken: Date
+}
+
+export async function GET(req: Request, res: Response) {
+	const prisma = new PrismaClient();
+
+	const data = await prisma.station.findMany({
+		include: {
+			weatherData: {
+				orderBy: {
+					timeTaken: "desc"
+				},
+				take: 10
+			}
+		}
+	})
+
+	return new NextResponse(JSON.stringify(data), { status: 200 })
+}
+
 export async function POST(req: Request) {
 	const key = req.headers.get("Authorization")
 	if (key !== "Bearer " + process.env.KEY)
@@ -43,7 +85,7 @@ export async function POST(req: Request) {
 	const prisma = new PrismaClient();
 
 	const time = new Date(data.time)
-	for (let station of data.stations) {
+	for (const station of data.stations) {
 		await prisma.weatherData.create({
 			data: {
 				latitude: station.latitude,

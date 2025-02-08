@@ -12,10 +12,6 @@ services:
     environment:
       - KEY=CYcagejUv3tJwTfEQMWxrF2ALnkVm87RP5hNybHZBDXdGu9zsK
       - DATABASE_URL=postgresql://mars:pass@mars-weather-db:5432/weather
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: "npm run dev"
 
   mars-weather-db:
     image: postgres
