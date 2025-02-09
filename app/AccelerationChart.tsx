@@ -3,19 +3,19 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-interface UltravioletChartProps {
+interface AccelerationChartProps {
   data: number[];
 }
 
-const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
+const AccelerationChart: React.FC<AccelerationChartProps> = ({ data }) => {
   const chartData = {
     labels: data.map((_, index) => index), 
     datasets: [
       {
-        label: 'Ultraviolet Data',
+        label: 'Acceleration',
         data: data, 
-        borderColor: 'rgb(165, 18, 239)', 
-        backgroundColor: 'rgba(81, 15, 131, 0.95)', 
+        borderColor: 'rgb(255, 99, 132)', 
+        backgroundColor: 'rgba(247, 235, 238, 0.99)', 
       },
     ],
   };
@@ -35,7 +35,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
       },
       title: {
         display: true,
-        text: 'Ultraviolet Data Over Time',
+        text: 'Acceleration (X) Over Time',
         color: '#FFFFFF',
         font: {
           size: 14,
@@ -68,7 +68,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
       y: {
         title: {
           display: true,
-          text: 'Ultraviolet Intensity',
+          text: 'Acceleration (m/s^2)',
           color: '#FFFFFF',
           font: {
             size: 12,
@@ -96,4 +96,4 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
   );
 };
 
-export default UltravioletChart;
+export default AccelerationChart;

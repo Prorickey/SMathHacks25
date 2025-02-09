@@ -52,9 +52,9 @@ export interface WeatherData {
 	uv: number
 	ir: number
 	moisture: number
-	accellX: number
-	accellY: number
-	accellZ: number
+	accelX: number
+	accelY: number
+	accelZ: number
 	angVelX: number
 	angVelY: number
 	angVelZ: number

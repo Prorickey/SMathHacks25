@@ -6,6 +6,12 @@ import {WeatherStation} from "@/app/api/route";
 import WindSpeedChart from './WindSpeedChart';
 import TemperatureChart from './TemperatureChart';
 import HumidityChart from './HumidityChart';
+import InfraredChart from "./InfraredChart";
+import UltravioletChart from "./UltravioletChart";
+import SoilMoistureChart from "./SoilMoistureChart";
+import CoordinateChart from "./CoordinateChart";
+import AccelerationChart from "./AccelerationChart";
+import VelocityChart from "./VelocityChart";
 
 export default function Home() {
 
@@ -90,7 +96,7 @@ export default function Home() {
 		// Function to handle canvas clicks
 		const handleClick = (event: MouseEvent) => {
 			if (!canvas || !ctx) return;
-
+			
 			const rect = canvas.getBoundingClientRect();
 			const clickX = event.clientX - rect.left;
 			const clickY = event.clientY - rect.top;
@@ -131,7 +137,7 @@ export default function Home() {
 							setSelectedItem("station")
 						}
 					}} />
-					<NavIcon id={"reagent-bottle.svg"} callback={() => {
+					<NavIcon id={"soil-moisture.svg"} callback={() => {
 						if(selectedItem == "data") setNavbarOpen(!navbarOpen)
 						else {
 							setNavbarOpen(true)
@@ -160,6 +166,9 @@ export default function Home() {
 						}
 					}} />
 				</div>
+				
+				
+				
 
 				{ /* Data area */ }
 				{
@@ -168,11 +177,12 @@ export default function Home() {
 							<div className={"nav absolute flex flex-col gap-y-2 h-full top-0 p-2"}>
 								<h1 className={`text-3xl font-bold text-center`}>Mars Weather Data</h1>
 								<h1 className={"text-2xl font-semibold text-center"}>{selectedNode?.name} Station</h1>
-								{ selectedItem == "station" && <StationInfoPanel /> }
-							  { selectedItem == "data" && <DataInfoPanel /> }
+								{ selectedItem == "station" && <StationInfoPanel latitudeData = {selectedNode?.weatherData.slice(-1).map(v => v.latitude) || []} longitudeData={selectedNode?.weatherData.slice(-1).map(v => v.longitude) || []} /> }
+							  { selectedItem == "data" && <SoilMoisturePanel moistureData ={selectedNode?.weatherData.slice(-10).map(v => v.moisture) || []} singleMoistureData={selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.latitude.toFixed(2)))|| []} />}
 							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(-10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(-10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(-10).map(v => v.humidity) || []} /> }
-							  { selectedItem == "earthquake" && <EarthquakeInfoPanel />}
-							  { selectedItem == "light" && <LightPanel /> }
+							  { selectedItem == "earthquake" && <EarthquakeInfoPanel accelxData={selectedNode?.weatherData.slice(-10).map(v => v.accelX) || []} accelyData={selectedNode?.weatherData.slice(-10).map(v => v.accelY) || []} accelzData={selectedNode?.weatherData.slice(-10).map(v => v.accelZ) || []} 
+								angvxData={selectedNode?.weatherData.slice(-10).map(v => v.angVelX) || []} angvyData={selectedNode?.weatherData.slice(-10).map(v => v.angVelY) || []} angvzData={selectedNode?.weatherData.slice(-10).map(v => v.angVelZ) || []}/> }
+							  { selectedItem == "light" && <LightPanel uvData={selectedNode?.weatherData.slice(-10).map(v => v.uv) || []} irData={selectedNode?.weatherData.slice(-10).map(v => v.ir) || []} /> }
 							</div>
 						</div>
 					)
@@ -209,38 +219,57 @@ function NavIcon({ id, callback }: { id: string, callback: () => void }) {
 	)
 }
 
-function StationInfoPanel() {
+function StationInfoPanel({ latitudeData, longitudeData }: { latitudeData: number[], longitudeData: number[] }) {
 	return (
 		<>
 			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Station Info</h1>
+			<div className={"h-[0px] bg-white w-[85%] mx-auto"}></div>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Latitude: {latitudeData}°</h1>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Longitude: {longitudeData}°</h1>
+			<CoordinateChart data={{ longitude: longitudeData, latitude: latitudeData }} />
 		</>
 	)
 }
 
-function DataInfoPanel() {
+function SoilMoisturePanel({ moistureData, singleMoistureData}: { moistureData: number[], singleMoistureData: number[] }) {
 	return (
 		<>
-			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>General Info</h1>
+			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Soil Moisture</h1>
+			<SoilMoistureChart data={moistureData} />
+			<div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Current Moisture: {singleMoistureData}% </h1>
+			
 		</>
 	)
 }
 
-function LightPanel() {
+function LightPanel({ irData, uvData }: { irData: number[], uvData: number[] }) {
 	// Correlates with Ultraviolet measurements from UV sensor
-
 	  return (
 		<>
-		  <h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Light Wavelength Info</h1>
+  		<div className={"h-full overflow-y-auto  p-4"}>
+		<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Light Wavelength Data</h1>
+		<InfraredChart data={irData} />
+		<div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>
+		<div className={"mt-4"}></div>
+		<div className={"text-left"}>
+		</div>
+		<UltravioletChart data={uvData} />
+		<div className={"text-left"}>
+		</div>
+	  </div>
 		</>
 	  );
 	}
 
-function EarthquakeInfoPanel() {
-// Correlates with Acceleromter and Velocity measurements from gyroscope and accelerometer
-
+function EarthquakeInfoPanel({accelxData, accelyData, accelzData, angvxData, angvyData, angvzData }: { accelxData: number[], accelyData: number[], accelzData: number[], angvxData: number[], angvyData: number[], angvzData: number[] }) {
   return (
     <>
       <h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Earthquake Info</h1>
+	  <h1 className={"text-center text-2xl"}>Earthquake State:</h1>
+	  <AccelerationChart data={accelxData} />
+	  <VelocityChart data={{x: accelxData, y: accelyData, z:accelzData }} />
+	  
     </>
   );
 }
@@ -258,29 +287,29 @@ function AirPanel({ windData, temperatureData, humidityData }: { windData: numbe
 	const avgHumidity = (humidityData.reduce((a, b) => a + b, 0) / humidityData.length).toFixed(2);
   
 	return (
-	  <div className={"h-full overflow-y-auto  p-4"}> {/* Adjust the height and background color as needed */}
+	  <div className={"h-full overflow-y-auto  p-4"}>
 		<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Air Data</h1>
 		<TemperatureChart data={temperatureData} />
 		<div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>
 		<div className={"mt-4"}></div>
 		<div className={"text-left"}>
-		  <p className={"text-center text-lg"}>Average Temperature: {avgTemperature} °C</p>
-		  <p className={"text-center text-lg"}>Max Temperature: {maxTemperature} °C</p>
-		  <p className={"text-center text-lg"}>Min Temperature: {minTemperature} °C</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Average Temperature: {avgTemperature} °C</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Max Temperature: {maxTemperature} °C</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Min Temperature: {minTemperature} °C</p>
 		</div>
 		<HumidityChart data={humidityData} />
 		<div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>
 		<div className={"mt-4"}></div>
 		<div className={"text-left"}>
-		  <p className={"text-center text-lg"}>Average Humidity: {avgHumidity} %</p>
-		  <p className={"text-center text-lg"}>Max Humidity: {maxHumidity} %</p>
-		  <p className={"text-center text-lg"}>Min Humidity: {minHumidity} %</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Average Humidity: {avgHumidity} %</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Max Humidity: {maxHumidity} %</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Min Humidity: {minHumidity} %</p>
 		</div>
 		<WindSpeedChart data={windData} />
 		<div className={"text-left"}>
-		  <p className={"text-center text-lg"}>Average Wind Speed: {avgWindSpeed} km/h</p>
-		  <p className={"text-center text-lg"}>Max Wind Speed: {maxWindSpeed} km/h</p>
-		  <p className={"text-center text-lg"}>Min Wind Speed: {minWindSpeed} km/h</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Average Wind Speed: {avgWindSpeed} km/h</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Max Wind Speed: {maxWindSpeed} km/h</p>
+		  <p className={"text-center text-2xl font-mono fade-in"}>Min Wind Speed: {minWindSpeed} km/h</p>
 		</div>
 	  </div>
 	);

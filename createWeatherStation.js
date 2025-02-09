@@ -8,7 +8,7 @@ const populate = true
 const lat = 0.01
 const long = 0.1
 const data = {
-	id: "STATION_4",
+	id: "STATION_1",
 	name: "Biology",
 }
 
