@@ -9,13 +9,13 @@ interface UltravioletChartProps {
 
 const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index), // X-axis labels as constant intervals
+    labels: data.map((_, index) => index), 
     datasets: [
       {
         label: 'Ultraviolet Data',
-        data: data, // Y-axis data values
-        borderColor: 'rgb(99, 177, 241)', // Blue border color
-        backgroundColor: 'rgba(99, 177, 241, 0.2)', // Light blue background color
+        data: data, 
+        borderColor: 'rgb(99, 177, 241)', 
+        backgroundColor: 'rgba(99, 177, 241, 0.2)', 
       },
     ],
   };
@@ -90,7 +90,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
   };
 
   return (
-    <div style={{ height: '300px', width: '100%' }}> {/* Adjust the height and width as needed */}
+    <div style={{ height: '300px', width: '100%' }}> 
       <Line data={chartData} options={options} />
     </div>
   );

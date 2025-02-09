@@ -9,13 +9,13 @@ interface HumidityChartProps {
 
 const HumidityChart: React.FC<HumidityChartProps> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index), // X-axis labels as constant intervals
+    labels: data.map((_, index) => index),
     datasets: [
       {
         label: 'Humidity',
-        data: data, // Y-axis data values
-        borderColor: 'rgb(229, 232, 67)', // Blue border color
-        backgroundColor: 'rgba(226, 234, 241, 0.96)', // Light blue background color
+        data: data, 
+        borderColor: 'rgb(229, 232, 67)', 
+        backgroundColor: 'rgba(226, 234, 241, 0.96)', 
       },
     ],
   };
@@ -90,7 +90,7 @@ const HumidityChart: React.FC<HumidityChartProps> = ({ data }) => {
   };
 
   return (
-    <div style={{ height: '300px', width: '100%' }}> {/* Adjust the height and width as needed */}
+    <div style={{ height: '300px', width: '100%' }}> 
       <Line data={chartData} options={options} />
     </div>
   );

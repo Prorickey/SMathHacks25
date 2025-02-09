@@ -9,13 +9,13 @@ interface WindSpeedChartProps {
 
 const WindSpeedChart: React.FC<WindSpeedChartProps> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index), // X-axis labels as constant intervals
+    labels: data.map((_, index) => index), 
     datasets: [
       {
         label: 'Wind Speed',
-        data: data, // Y-axis data values
-        borderColor: 'rgba(255, 165, 0, 1)', // Orange border color
-        backgroundColor: 'rgba(238, 234, 232, 0.94)', // Light orange background color
+        data: data, 
+        borderColor: 'rgba(255, 165, 0, 1)', 
+        backgroundColor: 'rgba(238, 234, 232, 0.94)', 
       },
     ],
   };
@@ -90,7 +90,7 @@ const WindSpeedChart: React.FC<WindSpeedChartProps> = ({ data }) => {
   };
   
   return (
-    <div style={{ height: '300px' }}> {/* Adjust the height as needed */}
+    <div style={{ height: '300px' }}> 
       <Line data={chartData} options={options} />
     </div>
   );

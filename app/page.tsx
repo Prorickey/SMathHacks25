@@ -61,11 +61,11 @@ export default function Home() {
 		const handleClick = (event: MouseEvent) => {
 			if (!canvas || !ctx) return;
 
-			const rect = canvas.getBoundingClientRect(); // Get canvas position
+			const rect = canvas.getBoundingClientRect(); 
 			const clickX = event.clientX - rect.left;
 			const clickY = event.clientY - rect.top;
 
-			// Check if click is inside any image
+			
 			data.forEach((station) => {
 				const x = station.weatherData[station.weatherData.length-1].latitude * 5 * canvas.width - 25
 				const y = station.weatherData[station.weatherData.length-1].longitude * 5 * canvas.height - 25
@@ -131,7 +131,7 @@ export default function Home() {
 					}} />
 				</div>
 
-				{ /* Data area */ }
+		
 				{
 					navbarOpen && (
 						<div className={"nav"}>
@@ -140,13 +140,13 @@ export default function Home() {
 								{ selectedItem == "station" && <StationInfoPanel /> }
 							  { selectedItem == "data" && <DataInfoPanel /> }
 							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(-10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(-10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(-10).map(v => v.humidity) || []} /> }
-							  { selectedItem == "earthquake" && <EarthquakeInfoPanel /> }
+							  { selectedItem == "earthquake" && <EarthquakeInfoPanel />}
+							  { selectedItem == "light" && <LightPanel /> }
 							</div>
 						</div>
 					)
 				}
 
-				{ /* Map Selector */ }
 				<div className={"w-[100vw] h-[100vh]"}>
 					<NextImage
 						src={"/marsbackground.tif"}
@@ -194,7 +194,7 @@ function DataInfoPanel() {
 }
 
 function LightPanel() {
-	// Correlates with Acceleromter and Velocity measurements from gyroscope and accelerometer
+	// Correlates with Ultraviolet measurements from UV sensor
 	
 	  return (
 		<>
@@ -226,7 +226,7 @@ function AirPanel({ windData, temperatureData, humidityData }: { windData: numbe
 	const avgHumidity = (humidityData.reduce((a, b) => a + b, 0) / humidityData.length).toFixed(2);
   
 	return (
-	  <div className={"h-[90vh] overflow-y-auto  p-4"}> {/* Adjust the height and background color as needed */}
+	  <div className={"h-[90vh] overflow-y-auto  p-4"}> 
 		<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Air Data</h1>
 		<TemperatureChart data={temperatureData} />
 		<div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>
