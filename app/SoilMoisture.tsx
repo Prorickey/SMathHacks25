@@ -1,21 +1,21 @@
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineControllerChartOptions } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-interface InfraredChartProps {
+interface SoilMoistureProps {
   data: number[];
 }
 
-const InfraredChart: React.FC<InfraredChartProps> = ({ data }) => {
+const WindSpeedChart: React.FC<SoilMoistureProps> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index),
+    labels: data.map((_, index) => index), 
     datasets: [
       {
-        label: 'Infrared Data',
+        label: 'Soil Moisture',
         data: data, 
-        borderColor: 'rgb(255, 69, 0)', 
-        backgroundColor: 'rgba(255, 69, 0, 0.2)', 
+        borderColor: 'rgb(99, 177, 241)', 
+        backgroundColor: 'rgba(250, 245, 245, 0.96)', 
       },
     ],
   };
@@ -35,7 +35,7 @@ const InfraredChart: React.FC<InfraredChartProps> = ({ data }) => {
       },
       title: {
         display: true,
-        text: 'Infrared Data Over Time',
+        text: 'Soil Moisture Over Time',
         color: '#FFFFFF',
         font: {
           size: 14,
@@ -68,7 +68,7 @@ const InfraredChart: React.FC<InfraredChartProps> = ({ data }) => {
       y: {
         title: {
           display: true,
-          text: 'Infrared Intensity',
+          text: 'Wind Speed (km/h)',
           color: '#FFFFFF',
           font: {
             size: 12,
@@ -88,12 +88,13 @@ const InfraredChart: React.FC<InfraredChartProps> = ({ data }) => {
       },
     },
   };
-
+  
   return (
-    <div style={{ height: '300px', width: '100%' }}> 
+    <div style={{ height: '300px', width: '400px' }}> 
       <Line data={chartData} options={options} />
     </div>
   );
 };
 
-export default InfraredChart;
+export default WindSpeedChart;
+

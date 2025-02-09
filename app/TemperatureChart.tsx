@@ -9,13 +9,13 @@ interface TemperatureChartProps {
 
 const TemperatureChart: React.FC<TemperatureChartProps> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index), // X-axis labels as constant intervals
+    labels: data.map((_, index) => index), 
     datasets: [
       {
         label: 'Temperature',
-        data: data, // Y-axis data values
-        borderColor: 'rgb(255, 99, 132)', // Red border color
-        backgroundColor: 'rgba(247, 235, 238, 0.99)', // Light red background color
+        data: data, 
+        borderColor: 'rgb(255, 99, 132)', 
+        backgroundColor: 'rgba(247, 235, 238, 0.99)', 
       },
     ],
   };
@@ -90,7 +90,7 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({ data }) => {
   };
 
   return (
-    <div style={{ height: '300px', width: '100%' }}> {/* Adjust the height and width as needed */}
+    <div style={{ height: '300px', width: '100%' }}> 
       <Line data={chartData} options={options} />
     </div>
   );

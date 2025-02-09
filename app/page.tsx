@@ -91,7 +91,7 @@ export default function Home() {
 		const handleClick = (event: MouseEvent) => {
 			if (!canvas || !ctx) return;
 
-			const rect = canvas.getBoundingClientRect(); // Get canvas position
+			const rect = canvas.getBoundingClientRect();
 			const clickX = event.clientX - rect.left;
 			const clickY = event.clientY - rect.top;
 
@@ -171,7 +171,8 @@ export default function Home() {
 								{ selectedItem == "station" && <StationInfoPanel /> }
 							  { selectedItem == "data" && <DataInfoPanel /> }
 							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(-10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(-10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(-10).map(v => v.humidity) || []} /> }
-							  { selectedItem == "earthquake" && <EarthquakeInfoPanel /> }
+							  { selectedItem == "earthquake" && <EarthquakeInfoPanel />}
+							  { selectedItem == "light" && <LightPanel /> }
 							</div>
 						</div>
 					)
@@ -224,15 +225,15 @@ function DataInfoPanel() {
 	)
 }
 
-/*function LightPanel() {
-	// Correlates with Acceleromter and Velocity measurements from gyroscope and accelerometer
-	
+function LightPanel() {
+	// Correlates with Ultraviolet measurements from UV sensor
+
 	  return (
 		<>
 		  <h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Light Wavelength Info</h1>
 		</>
 	  );
-	}*/
+	}
 
 function EarthquakeInfoPanel() {
 // Correlates with Acceleromter and Velocity measurements from gyroscope and accelerometer
