@@ -175,8 +175,8 @@ export default function Home() {
 							<div className={"nav absolute flex flex-col gap-y-2 h-full top-0 p-2"}>
 								<h1 className={`text-3xl font-bold text-center`}>Mars Weather Data</h1>
 								<h1 className={"text-2xl font-semibold text-center"}>{selectedNode?.name} Station</h1>
-								{ selectedItem == "station" && <StationInfoPanel latitudeData = {selectedNode?.weatherData.slice(-1).map(v => v.latitude) || []} longitudeData={selectedNode?.weatherData.slice(-1).map(v => v.longitude) || []} /> }
-							  { selectedItem == "data" && <SoilMoisturePanel moistureData ={selectedNode?.weatherData.slice(-10).map(v => v.moisture) || []} singleMoistureData={selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.latitude.toFixed(2)))|| []} />}
+								{ selectedItem == "station" && <StationInfoPanel latitudeData = {selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.latitude.toFixed(2))) || []} longitudeData={selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.longitude.toFixed(2))) || []} /> }
+							  { selectedItem == "data" && <SoilMoisturePanel moistureData ={selectedNode?.weatherData.slice(-10).map(v => v.moisture) || []} singleMoistureData={selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.moisture.toFixed(2))) || []} />}
 							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(-10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(-10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(-10).map(v => v.humidity) || []} /> }
 							  { selectedItem == "earthquake" && <EarthquakeInfoPanel accelxData={selectedNode?.weatherData.slice(-10).map(v => v.accelX) || []} accelyData={selectedNode?.weatherData.slice(-10).map(v => v.accelY) || []} accelzData={selectedNode?.weatherData.slice(-10).map(v => v.accelZ) || []}
 								angvxData={selectedNode?.weatherData.slice(-10).map(v => v.angVelX) || []} angvyData={selectedNode?.weatherData.slice(-10).map(v => v.angVelY) || []} angvzData={selectedNode?.weatherData.slice(-10).map(v => v.angVelZ) || []}/> }
@@ -222,8 +222,8 @@ function StationInfoPanel({ latitudeData, longitudeData }: { latitudeData: numbe
 		<>
 			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Station Info</h1>
 			<div className={"h-[0px] bg-white w-[85%] mx-auto"}></div>
-			<h1 className={"text-center text-2xl font-mono fade-in"}>Latitude: {latitudeData}°</h1>
-			<h1 className={"text-center text-2xl font-mono fade-in"}>Longitude: {longitudeData}°</h1>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Latitude: {Math.round(latitudeData[0]*5.0)/5.0}°</h1>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Longitude: {Math.round(longitudeData[0]*5.0)/5.0}°</h1>
 			<CoordinateChart data={{ longitude: longitudeData, latitude: latitudeData }} />
 		</>
 	)
@@ -261,13 +261,19 @@ function LightPanel({ irData, uvData }: { irData: number[], uvData: number[] }) 
 	}
 
 function EarthquakeInfoPanel({accelxData, accelyData, accelzData, angvxData, angvyData, angvzData }: { accelxData: number[], accelyData: number[], accelzData: number[], angvxData: number[], angvyData: number[], angvzData: number[] }) {
+const earthquakeDetector = (((accelxData.reduce((a, b) => a + b, 0) / accelxData.length) > 1) || ((accelzData.reduce((a, b) => a + b, 0) / accelxData.length)> 1))
   return (
     <>
       <h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Earthquake Info</h1>
-	  <h1 className={"text-center text-2xl"}>Earthquake State:</h1>
-	  <AccelerationChart data={accelxData} />
-	  <VelocityChart data={{x: accelxData, y: accelyData, z:accelzData }} />
+	  <h1 className={"text-center text-2xl font-mono fade-in"}>Earthquake State:</h1>
+	  {earthquakeDetector ? <p className={"text-center text-1xl text-red-500 font-mono border border-width 1 fade-in"}>Seismic Activity Detected</p> : <p className={"text-center text-1xl text-green-500 font-mono border border-width 1 fade-in"}>Stable Seismic State</p>}
 
+	  
+
+	  <AccelerationChart data={{x: accelxData, y: accelyData, z: accelzData}} />
+	  <div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>
+	  <VelocityChart data={{x: angvxData, y: angvyData, z:angvzData }} />
+	  
     </>
   );
 }
