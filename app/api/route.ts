@@ -39,7 +39,7 @@ export interface WeatherStation {
 	name: string
 	weatherData: WeatherData[]
 }
-
+ 
 export interface WeatherData {
 	latitude: number
 	longitude: number

@@ -28,7 +28,6 @@ const prisma = new PrismaClient();
 				latitude: 0.15,
 				longitude: 0.05,
 				wind: Math.random() * 50, // Mars wind speeds range from 2-50 m/s
-
 				pressure: Math.random() * (900 - 600) + 600, // 600-900 Pa (very low compared to Earth)
 				temperature: Math.random() * (-20 - (-120)) + (-120), // -120 to -20°C
 				humidity: Math.random() * (0.1 - 0.001) + 0.001, // 0.001% to 0.1% (extremely dry)
@@ -50,7 +49,6 @@ const prisma = new PrismaClient();
 
 				timeTaken: new Date(start + (i*5000)).toISOString() // Current timestamp in ISO format
 			}
-
 		})
 	}
 })();
