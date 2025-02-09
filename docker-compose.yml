@@ -3,10 +3,10 @@ version: '3.8'
 services:
   mars-weather-app:
     container_name: mars-weather-app
-    build: .
+    image: docker.prorickey.xyz/prorickey/smathhacks25:0.1.0
     restart: always
     ports:
-      - "3000:3000"
+      - "3456:3000"
     depends_on:
       - mars-weather-db
     environment:
@@ -18,7 +18,7 @@ services:
     container_name: mars-weather-db
     restart: always
     ports:
-      - "5432:5432"
+      - "7239:5432"
     environment:
       POSTGRES_USER: mars
       POSTGRES_PASSWORD: pass

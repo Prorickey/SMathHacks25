@@ -20,6 +20,21 @@ body {
   background: var(--nav-background);
 }
 
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
 
+::-webkit-scrollbar-track {
+  background: #222222;
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
 
+::-webkit-scrollbar-thumb {
+  background: #636363;
+  border-radius: 10px;
+}
 
+::-webkit-scrollbar-thumb:hover {
+  background: #979797;
+}

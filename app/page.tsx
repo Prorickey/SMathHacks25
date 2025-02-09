@@ -3,8 +3,6 @@
 import NextImage from "next/image";
 import {useEffect, useRef, useState} from "react";
 import {WeatherStation} from "@/app/api/route";
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import WindSpeedChart from './WindSpeedChart';
 import TemperatureChart from './TemperatureChart';
 import HumidityChart from './HumidityChart';
@@ -14,25 +12,25 @@ export default function Home() {
 	const [selectedNode, setSelectedNode] = useState<WeatherStation | null>(null);
 	const [data, setData] = useState<WeatherStation[]>([]);
 
+	const fetchData = () => {
+		fetch("/api").then((res) => res.json()).then(setData)
+	}
+
 	useEffect(() => {
-		setTimeout(() => {
-			fetch("/api").then((res) => res.json()).then((data: WeatherStation[]) => {
-				setData(data);
-				console.log(data[0])
-				setSelectedNode(data[0])
-			})
-		}, 5000)
+		fetchData()
+		setSelectedNode(data[0])
+		setInterval(fetchData, 5000)
 	}, []);
 
 	const [navbarOpen, setNavbarOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<string>("station");
 
-	const range = {
+	/*const range = {
 		minX: 0,
 		minY: 0,
 		maxX: 0.2,
 		maxY: 0.2
-	}
+	}*/
 
 	const navRef = useRef<HTMLDivElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -47,14 +45,46 @@ export default function Home() {
 		canvas.height = window.innerHeight;
 
 		const img = new Image();
-		img.src = "/telescope.svg"; // Use the correct path (place SVG in `/public`)
+		img.src = "/telescope.svg";
 
 		img.onload = () => {
-			data.forEach((station) => {
+			for (let station of data) {
 				const x = station.weatherData[station.weatherData.length-1].latitude * 5 * canvas.width - 25
 				const y = station.weatherData[station.weatherData.length-1].longitude * 5 * canvas.height - 25
+
+				// Text box properties
+				const text = station.name;
+				ctx.font = "14px Arial";
+				const paddingX = 10;
+				const textWidth = ctx.measureText(text).width + 2 * paddingX;
+				const textHeight = 20 + 2;
+				const radius = 10;
+				const xOffset = (ctx.measureText(text).width + 2 * paddingX) / 3
+
+				// Draw rounded rectangle background
+				ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+				ctx.beginPath();
+				ctx.moveTo(x + xOffset - textWidth / 2 + radius, y - 30);
+				ctx.lineTo(x + xOffset + textWidth / 2 - radius, y - 30);
+				ctx.quadraticCurveTo(x + xOffset + textWidth / 2, y - 30, x + xOffset + textWidth / 2, y - 30 + radius);
+				ctx.lineTo(x + xOffset + textWidth / 2, y - 30 + textHeight - radius);
+				ctx.quadraticCurveTo(x + xOffset + textWidth / 2, y - 30 + textHeight, x + xOffset + textWidth / 2 - radius, y - 30 + textHeight);
+				ctx.lineTo(x + xOffset - textWidth / 2 + radius, y - 30 + textHeight);
+				ctx.quadraticCurveTo(x + xOffset - textWidth / 2, y - 30 + textHeight, x + xOffset - textWidth / 2, y - 30 + textHeight - radius);
+				ctx.lineTo(x + xOffset - textWidth / 2, y - 30 + radius);
+				ctx.quadraticCurveTo(x + xOffset - textWidth / 2, y - 30, x + xOffset - textWidth / 2 + radius, y - 30);
+				ctx.closePath();
+				ctx.fill();
+
+				// Draw text
+				ctx.fillStyle = "white";
+				ctx.font = "14px Arial";
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle";
+				ctx.fillText(text, x + xOffset, y - 20);
+
 				ctx.drawImage(img, x, y, 50, 50);
-			})
+			}
 		};
 
 		// Function to handle canvas clicks
@@ -134,9 +164,10 @@ export default function Home() {
 				{ /* Data area */ }
 				{
 					navbarOpen && (
-						<div className={"nav"}>
+						<div className={"nav z-10 h-full"}>
 							<div className={"nav absolute flex flex-col gap-y-2 h-full top-0 p-2"}>
-								<h1 className={`text-3xl font-bold text-center`}>Mars Weather: {selectedNode?.name}</h1>
+								<h1 className={`text-3xl font-bold text-center`}>Mars Weather Data</h1>
+								<h1 className={"text-2xl font-semibold text-center"}>{selectedNode?.name} Station</h1>
 								{ selectedItem == "station" && <StationInfoPanel /> }
 							  { selectedItem == "data" && <DataInfoPanel /> }
 							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(-10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(-10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(-10).map(v => v.humidity) || []} /> }
@@ -147,7 +178,7 @@ export default function Home() {
 				}
 
 				{ /* Map Selector */ }
-				<div className={"w-[100vw] h-[100vh]"}>
+				<div className={""}>
 					<NextImage
 						src={"/marsbackground.tif"}
 						alt={"Mars"}
@@ -193,7 +224,7 @@ function DataInfoPanel() {
 	)
 }
 
-function LightPanel() {
+/*function LightPanel() {
 	// Correlates with Acceleromter and Velocity measurements from gyroscope and accelerometer
 	
 	  return (
@@ -201,7 +232,7 @@ function LightPanel() {
 		  <h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Light Wavelength Info</h1>
 		</>
 	  );
-	}
+	}*/
 
 function EarthquakeInfoPanel() {
 // Correlates with Acceleromter and Velocity measurements from gyroscope and accelerometer
@@ -226,7 +257,7 @@ function AirPanel({ windData, temperatureData, humidityData }: { windData: numbe
 	const avgHumidity = (humidityData.reduce((a, b) => a + b, 0) / humidityData.length).toFixed(2);
   
 	return (
-	  <div className={"h-[90vh] overflow-y-auto  p-4"}> {/* Adjust the height and background color as needed */}
+	  <div className={"h-full overflow-y-auto  p-4"}> {/* Adjust the height and background color as needed */}
 		<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Air Data</h1>
 		<TemperatureChart data={temperatureData} />
 		<div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>

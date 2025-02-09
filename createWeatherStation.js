@@ -4,9 +4,12 @@ import { config } from "dotenv";
 config()
 
 // Fill out this data with the information you want to insert
+const populate = true
+const lat = 0.01
+const long = 0.1
 const data = {
-	id: "STATION_1",
-	name: "Fire Dog",
+	id: "STATION_4",
+	name: "Biology",
 }
 
 const prisma = new PrismaClient();
@@ -19,14 +22,15 @@ const prisma = new PrismaClient();
 
 	console.log(res)
 
+	if(!populate) return
 	const start = new Date().getMilliseconds()
 	for(let i = 0; i < 10000; i++) {
 		await prisma.weatherData.create({
 			data: {
 				stationId: res.id,
 
-				latitude: 0.15,
-				longitude: 0.05,
+				latitude: lat,
+				longitude: long,
 				wind: Math.random() * 50, // Mars wind speeds range from 2-50 m/s
 				pressure: Math.random() * (900 - 600) + 600, // 600-900 Pa (very low compared to Earth)
 				temperature: Math.random() * (-20 - (-120)) + (-120), // -120 to -20°C
