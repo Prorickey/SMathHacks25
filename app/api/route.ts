@@ -70,12 +70,97 @@ export async function GET() {
 				orderBy: {
 					timeTaken: "desc"
 				},
-				take: 100
+				where: {
+					timeTaken: {
+						gte: new Date(new Date().getMilliseconds() - 1000 * 60 * 60 * 24 * 7)
+					}
+				}
 			}
 		}
 	})
 
-	return new NextResponse(JSON.stringify(data), { status: 200 })
+	const aggregatedStations: WeatherStation[] = [];
+
+	// Aggregate
+	for(const station of data) {
+		const aggregatedData: WeatherData[] = [];
+		const groupedData: { [key: string]: WeatherData[] } = {};
+
+		// Group data by 30-minute intervals
+		for (const entry of station.weatherData) {
+			const date = new Date(entry.timeTaken);
+			const minutes = date.getMinutes() < 30 ? "00" : "30"; // Round to nearest 30-minute mark
+			const timeKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}T${String(date.getHours()).padStart(2, "0")}:${minutes}`;
+
+			if (!groupedData[timeKey]) {
+				groupedData[timeKey] = [];
+			}
+			groupedData[timeKey].push(entry);
+		}
+
+		// Compute averages for each minute
+		for (const [minute, entries] of Object.entries(groupedData)) {
+			const avgEntry = entries.reduce(
+				(acc, curr, _, arr) => {
+					acc.latitude += curr.latitude;
+					acc.longitude += curr.longitude;
+					acc.pressure += curr.pressure;
+					acc.temperature += curr.temperature;
+					acc.humidity += curr.humidity;
+					acc.co2 += curr.co2;
+					acc.dust += curr.dust;
+					acc.wind += curr.wind;
+					acc.uv += curr.uv;
+					acc.ir += curr.ir;
+					acc.moisture += curr.moisture;
+					acc.accelX += curr.accelX;
+					acc.accelY += curr.accelY;
+					acc.accelZ += curr.accelZ;
+					acc.angVelX += curr.angVelX;
+					acc.angVelY += curr.angVelY;
+					acc.angVelZ += curr.angVelZ;
+					return acc;
+				},
+				{
+					latitude: 0,
+					longitude: 0,
+					pressure: 0,
+					temperature: 0,
+					humidity: 0,
+					co2: 0,
+					dust: 0,
+					wind: 0,
+					uv: 0,
+					ir: 0,
+					moisture: 0,
+					accelX: 0,
+					accelY: 0,
+					accelZ: 0,
+					angVelX: 0,
+					angVelY: 0,
+					angVelZ: 0,
+					timeTaken: new Date(minute + ":00"), // Set to the start of the minute
+				}
+			);
+
+			const count = entries.length;
+			Object.keys(avgEntry).forEach((key) => {
+				if (key !== "timeTaken") (avgEntry as any)[key] /= count; // Compute averages
+			});
+
+			aggregatedData.push(avgEntry);
+		}
+
+		aggregatedStations.push({
+			id: station.id,
+			name: station.name,
+			weatherData: aggregatedData
+		});
+
+		console.log(aggregatedData.length)
+	}
+
+	return new NextResponse(JSON.stringify(aggregatedStations), { status: 200 })
 }
 
 export async function POST(req: Request) {
