@@ -3,19 +3,20 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-interface UltravioletChartProps {
-  data: number[];
+interface CoordinateChart {
+  data: { longitude: number[], latitude: number[] };
 }
 
-const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
+const CoordinateChart: React.FC<CoordinateChart> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index), 
+    labels: data.longitude,
     datasets: [
       {
-        label: 'Ultraviolet Data',
-        data: data, 
-        borderColor: 'rgb(165, 18, 239)', 
-        backgroundColor: 'rgba(81, 15, 131, 0.95)', 
+        label: 'Coordinate Data',
+        data: data.latitude, 
+        borderColor: 'rgb(255, 99, 132)', 
+        backgroundColor: 'rgba(247, 235, 238, 0.99)', 
+        pointradius: 16,
       },
     ],
   };
@@ -35,7 +36,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
       },
       title: {
         display: true,
-        text: 'Ultraviolet Data Over Time',
+        text: 'Latitude & Longitude',
         color: '#FFFFFF',
         font: {
           size: 14,
@@ -47,7 +48,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
       x: {
         title: {
           display: true,
-          text: 'Time Interval',
+          text: 'Longitude (°)',
           color: '#FFFFFF',
           font: {
             size: 12,
@@ -68,7 +69,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
       y: {
         title: {
           display: true,
-          text: 'Ultraviolet Intensity',
+          text: 'Latitude (°)',
           color: '#FFFFFF',
           font: {
             size: 12,
@@ -96,4 +97,4 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
   );
 };
 
-export default UltravioletChart;
+export default CoordinateChart;

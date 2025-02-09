@@ -3,19 +3,32 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-interface UltravioletChartProps {
-  data: number[];
+interface VelocityChartProps {
+  data: { x: number[], y: number[], z:number[] };
 }
 
-const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
+
+const VelocityChart: React.FC<VelocityChartProps> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index), 
+    labels: data.x.map((_, index) => index),
     datasets: [
       {
-        label: 'Ultraviolet Data',
-        data: data, 
-        borderColor: 'rgb(165, 18, 239)', 
-        backgroundColor: 'rgba(81, 15, 131, 0.95)', 
+        label: 'Angular Velocity X',
+        data: data.x, 
+        borderColor: 'rgb(255, 99, 132)', 
+        backgroundColor: 'rgba(255, 99, 132, 0.2)', 
+      },
+      {
+        label: 'Angular Velocity Y',
+        data: data.y, 
+        borderColor: 'rgb(54, 162, 235)', 
+        backgroundColor: 'rgba(54, 162, 235, 0.2)', 
+      },
+      {
+        label: 'Angular Velocity Z',
+        data: data.z, 
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)', 
       },
     ],
   };
@@ -35,7 +48,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
       },
       title: {
         display: true,
-        text: 'Ultraviolet Data Over Time',
+        text: 'Angular Velocity (X) Over Time',
         color: '#FFFFFF',
         font: {
           size: 14,
@@ -68,7 +81,7 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
       y: {
         title: {
           display: true,
-          text: 'Ultraviolet Intensity',
+          text: 'Angular Velocity (m/s)',
           color: '#FFFFFF',
           font: {
             size: 12,
@@ -96,4 +109,4 @@ const UltravioletChart: React.FC<UltravioletChartProps> = ({ data }) => {
   );
 };
 
-export default UltravioletChart;
+export default VelocityChart;

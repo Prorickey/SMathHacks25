@@ -7,15 +7,15 @@ interface SoilMoistureProps {
   data: number[];
 }
 
-const WindSpeedChart: React.FC<SoilMoistureProps> = ({ data }) => {
+const SoilMoistureChart: React.FC<SoilMoistureProps> = ({ data }) => {
   const chartData = {
     labels: data.map((_, index) => index), 
     datasets: [
       {
         label: 'Soil Moisture',
         data: data, 
-        borderColor: 'rgb(99, 177, 241)', 
-        backgroundColor: 'rgba(250, 245, 245, 0.96)', 
+        borderColor: 'rgb(41, 199, 2)', 
+        backgroundColor: 'rgba(64, 222, 216, 0.96)', 
       },
     ],
   };
@@ -96,5 +96,5 @@ const WindSpeedChart: React.FC<SoilMoistureProps> = ({ data }) => {
   );
 };
 
-export default WindSpeedChart;
+export default SoilMoistureChart;
 
