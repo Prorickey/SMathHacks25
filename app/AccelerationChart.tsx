@@ -4,18 +4,31 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface AccelerationChartProps {
-  data: number[];
+  data: { x: number[], y: number[], z:number[] };
 }
+
 
 const AccelerationChart: React.FC<AccelerationChartProps> = ({ data }) => {
   const chartData = {
-    labels: data.map((_, index) => index), 
+    labels: data.x.map((_, index) => index),
     datasets: [
       {
-        label: 'Acceleration',
-        data: data, 
+        label: 'Acceleration X',
+        data: data.x, 
         borderColor: 'rgb(255, 99, 132)', 
-        backgroundColor: 'rgba(247, 235, 238, 0.99)', 
+        backgroundColor: 'rgba(255, 99, 132, 0.2)', 
+      },
+      {
+        label: 'Acceleration Y',
+        data: data.y, 
+        borderColor: 'rgb(54, 162, 235)', 
+        backgroundColor: 'rgba(54, 162, 235, 0.2)', 
+      },
+      {
+        label: 'Acceleration Z',
+        data: data.z, 
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)', 
       },
     ],
   };
@@ -35,7 +48,7 @@ const AccelerationChart: React.FC<AccelerationChartProps> = ({ data }) => {
       },
       title: {
         display: true,
-        text: 'Acceleration (X) Over Time',
+        text: 'Acceleration Over Time',
         color: '#FFFFFF',
         font: {
           size: 14,
