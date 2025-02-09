@@ -67,11 +67,11 @@ export async function GET() {
 		include: {
 			weatherData: {
 				orderBy: {
-					timeTaken: "desc"
+					timeTaken: "asc"
 				},
 				where: {
 					timeTaken: {
-						gte: new Date(new Date().getMilliseconds() - 1000 * 60 * 60 * 24 * 3) // Last 3 days
+						gte: new Date(new Date().getMilliseconds() - 1000 * 60 * 60 * 5) // Last 5 hours
 					}
 				}
 			}
