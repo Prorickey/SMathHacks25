@@ -26,7 +26,7 @@ const prisma = new PrismaClient();
 
 	if(!populate) return
 	const start = new Date().getMilliseconds() - 1000 * 60 * 60 * 24 * 7 // 1 week ago
-	for(let i = 0; i < 604800 * 5; i++) {
+	for(let i = 0; i < 604800; i++) {
 		quieries.push({
 			stationId: res.id,
 
@@ -52,7 +52,7 @@ const prisma = new PrismaClient();
 			angVelY: Math.random() * (0.1 - (-0.1)) + (-0.1),
 			angVelZ: Math.random() * (0.1 - (-0.1)) + (-0.1),
 
-			timeTaken: new Date(start + (i*200)).toISOString() // Current timestamp in ISO format
+			timeTaken: new Date(start + (i*1000)).toISOString() // Current timestamp in ISO format
 		})
 
 		if(quieries.length >= 100000) {
@@ -63,4 +63,8 @@ const prisma = new PrismaClient();
 			quieries = []
 		}
 	}
+
+	await prisma.weatherData.createMany({
+		data: quieries
+	})
 })();

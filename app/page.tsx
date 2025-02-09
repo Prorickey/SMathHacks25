@@ -18,15 +18,16 @@ export default function Home() {
 	const [selectedNode, setSelectedNode] = useState<WeatherStation | null>(null);
 	const [data, setData] = useState<WeatherStation[]>([]);
 
-	const fetchData = () => {
-		fetch("/api").then((res) => res.json()).then(setData)
+	const fetchData = async () => {
+		const dat = await fetch("/api").then((res) => res.json())
+		setData(dat)
+		const node = dat.find((node: WeatherStation) => node.id == selectedNode?.id)
+		setSelectedNode(node || dat[0]);
 	}
 
 	useEffect(() => {
-		fetchData()
-		setSelectedNode(data[0])
-		setInterval(fetchData, 5000)
-	}, []);
+		setTimeout(fetchData, 2000)
+	}, [selectedNode]);
 
 	const [navbarOpen, setNavbarOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<string>("station");
@@ -54,7 +55,7 @@ export default function Home() {
 		img.src = "/telescope.svg";
 
 		img.onload = () => {
-			for (let station of data) {
+			for (const station of data) {
 				const x = station.weatherData[station.weatherData.length-1].latitude * 5 * canvas.width - 25
 				const y = station.weatherData[station.weatherData.length-1].longitude * 5 * canvas.height - 25
 
@@ -96,7 +97,7 @@ export default function Home() {
 		// Function to handle canvas clicks
 		const handleClick = (event: MouseEvent) => {
 			if (!canvas || !ctx) return;
-			
+
 			const rect = canvas.getBoundingClientRect();
 			const clickX = event.clientX - rect.left;
 			const clickY = event.clientY - rect.top;
@@ -166,9 +167,6 @@ export default function Home() {
 						}
 					}} />
 				</div>
-				
-				
-				
 
 				{ /* Data area */ }
 				{
@@ -180,7 +178,7 @@ export default function Home() {
 								{ selectedItem == "station" && <StationInfoPanel latitudeData = {selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.latitude.toFixed(2))) || []} longitudeData={selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.longitude.toFixed(2))) || []} /> }
 							  { selectedItem == "data" && <SoilMoisturePanel moistureData ={selectedNode?.weatherData.slice(-10).map(v => v.moisture) || []} singleMoistureData={selectedNode?.weatherData.slice(-1).map(v => parseFloat(v.moisture.toFixed(2))) || []} />}
 							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(-10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(-10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(-10).map(v => v.humidity) || []} /> }
-							  { selectedItem == "earthquake" && <EarthquakeInfoPanel accelxData={selectedNode?.weatherData.slice(-10).map(v => v.accelX) || []} accelyData={selectedNode?.weatherData.slice(-10).map(v => v.accelY) || []} accelzData={selectedNode?.weatherData.slice(-10).map(v => v.accelZ) || []} 
+							  { selectedItem == "earthquake" && <EarthquakeInfoPanel accelxData={selectedNode?.weatherData.slice(-10).map(v => v.accelX) || []} accelyData={selectedNode?.weatherData.slice(-10).map(v => v.accelY) || []} accelzData={selectedNode?.weatherData.slice(-10).map(v => v.accelZ) || []}
 								angvxData={selectedNode?.weatherData.slice(-10).map(v => v.angVelX) || []} angvyData={selectedNode?.weatherData.slice(-10).map(v => v.angVelY) || []} angvzData={selectedNode?.weatherData.slice(-10).map(v => v.angVelZ) || []}/> }
 							  { selectedItem == "light" && <LightPanel uvData={selectedNode?.weatherData.slice(-10).map(v => v.uv) || []} irData={selectedNode?.weatherData.slice(-10).map(v => v.ir) || []} /> }
 							</div>
@@ -224,8 +222,8 @@ function StationInfoPanel({ latitudeData, longitudeData }: { latitudeData: numbe
 		<>
 			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Station Info</h1>
 			<div className={"h-[0px] bg-white w-[85%] mx-auto"}></div>
-			<h1 className={"text-center text-2xl font-mono fade-in"}>Latitude: {latitudeData}°</h1>
-			<h1 className={"text-center text-2xl font-mono fade-in"}>Longitude: {longitudeData}°</h1>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Latitude: {Math.round(latitudeData[0]*5.0)/5.0}°</h1>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Longitude: {Math.round(longitudeData[0]*5.0)/5.0}°</h1>
 			<CoordinateChart data={{ longitude: longitudeData, latitude: latitudeData }} />
 		</>
 	)
@@ -238,7 +236,7 @@ function SoilMoisturePanel({ moistureData, singleMoistureData}: { moistureData: 
 			<SoilMoistureChart data={moistureData} />
 			<div className={"h-[1px] bg-white w-[85%] mx-auto"}></div>
 			<h1 className={"text-center text-2xl font-mono fade-in"}>Current Moisture: {singleMoistureData}% </h1>
-			
+
 		</>
 	)
 }
