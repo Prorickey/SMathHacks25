@@ -222,8 +222,8 @@ function StationInfoPanel({ latitudeData, longitudeData }: { latitudeData: numbe
 		<>
 			<h1 className={"text-center text-2xl underline underline-offset-2 decoration-amber-500"}>Station Info</h1>
 			<div className={"h-[0px] bg-white w-[85%] mx-auto"}></div>
-			<h1 className={"text-center text-2xl font-mono fade-in"}>Latitude: {latitudeData}°</h1>
-			<h1 className={"text-center text-2xl font-mono fade-in"}>Longitude: {longitudeData}°</h1>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Latitude: {Math.round(latitudeData[0]*5.0)/5.0}°</h1>
+			<h1 className={"text-center text-2xl font-mono fade-in"}>Longitude: {Math.round(longitudeData[0]*5.0)/5.0}°</h1>
 			<CoordinateChart data={{ longitude: longitudeData, latitude: latitudeData }} />
 		</>
 	)

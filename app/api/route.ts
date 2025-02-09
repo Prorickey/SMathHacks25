@@ -74,7 +74,7 @@ export async function GET() {
 						gte: new Date(new Date().getMilliseconds() - 1000 * 60 * 60 * 24 * 3) // Last 3 days
 					}
 				}
-			}
+			},
 		}
 	})
 
@@ -161,7 +161,7 @@ export async function GET() {
 		console.log(aggregatedData.length)
 	}
 
-	return new NextResponse(JSON.stringify(data), { status: 200 })
+	return new NextResponse(JSON.stringify(aggregatedStations), { status: 200 })
 }
 
 export async function POST(req: Request) {
