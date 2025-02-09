@@ -4,7 +4,7 @@ import { config } from "dotenv";
 config()
 
 // Fill out this data with the information you want to insert
-const populate = true
+const populate = false
 const lat = 0.15
 const long = 0.1
 const data = {

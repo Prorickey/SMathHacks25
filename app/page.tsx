@@ -12,15 +12,16 @@ export default function Home() {
 	const [selectedNode, setSelectedNode] = useState<WeatherStation | null>(null);
 	const [data, setData] = useState<WeatherStation[]>([]);
 
-	const fetchData = () => {
-		fetch("/api").then((res) => res.json()).then(setData)
+	const fetchData = async () => {
+		const dat = await fetch("/api").then((res) => res.json())
+		setData(dat)
+		const node = dat.find((node: WeatherStation) => node.id == selectedNode?.id)
+		setSelectedNode(node || dat[0]);
 	}
 
 	useEffect(() => {
-		fetchData()
-		setSelectedNode(data[0])
-		setInterval(fetchData, 5000)
-	}, []);
+		setTimeout(fetchData, 2000)
+	}, [selectedNode]);
 
 	const [navbarOpen, setNavbarOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<string>("station");
@@ -48,7 +49,7 @@ export default function Home() {
 		img.src = "/telescope.svg";
 
 		img.onload = () => {
-			for (let station of data) {
+			for (const station of data) {
 				const x = station.weatherData[station.weatherData.length-1].latitude * 5 * canvas.width - 25
 				const y = station.weatherData[station.weatherData.length-1].longitude * 5 * canvas.height - 25
 
@@ -170,7 +171,7 @@ export default function Home() {
 								<h1 className={"text-2xl font-semibold text-center"}>{selectedNode?.name} Station</h1>
 								{ selectedItem == "station" && <StationInfoPanel /> }
 							  { selectedItem == "data" && <DataInfoPanel /> }
-							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(-10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(-10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(-10).map(v => v.humidity) || []} /> }
+							  { selectedItem == "wind" && <AirPanel windData={selectedNode?.weatherData.slice(0, 10).map(v => v.wind) || []} temperatureData={selectedNode?.weatherData.slice(0, 10).map(v => v.temperature) || []} humidityData={selectedNode?.weatherData.slice(0, 10).map(v => v.humidity) || []} /> }
 							  { selectedItem == "earthquake" && <EarthquakeInfoPanel />}
 							  { selectedItem == "light" && <LightPanel /> }
 							</div>

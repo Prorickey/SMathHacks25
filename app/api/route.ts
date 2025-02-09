@@ -20,6 +20,7 @@ export interface WeatherStationPayload {
 	uv: number
 	ir: number
 	moisture: number
+
 	accel: {
 		x: number
 		y: number
@@ -30,8 +31,6 @@ export interface WeatherStationPayload {
 		y: number
 		z: number
 	}
-
-	timeOffset: number
 }
 
 export interface WeatherStation {
@@ -72,7 +71,7 @@ export async function GET() {
 				},
 				where: {
 					timeTaken: {
-						gte: new Date(new Date().getMilliseconds() - 1000 * 60 * 60 * 24 * 7)
+						gte: new Date(new Date().getMilliseconds() - 1000 * 60 * 60 * 24 * 3) // Last 3 days
 					}
 				}
 			}
@@ -101,7 +100,7 @@ export async function GET() {
 		// Compute averages for each minute
 		for (const [minute, entries] of Object.entries(groupedData)) {
 			const avgEntry = entries.reduce(
-				(acc, curr, _, arr) => {
+				(acc, curr) => {
 					acc.latitude += curr.latitude;
 					acc.longitude += curr.longitude;
 					acc.pressure += curr.pressure;
@@ -143,9 +142,11 @@ export async function GET() {
 				}
 			);
 
-			const count = entries.length;
-			Object.keys(avgEntry).forEach((key) => {
-				if (key !== "timeTaken") (avgEntry as any)[key] /= count; // Compute averages
+			const count: number = entries.length;
+
+			(Object.keys(avgEntry) as Array<keyof WeatherData>).forEach((key) => {
+				if (key !== "timeTaken" && typeof avgEntry[key] === "number")
+					avgEntry[key] /= count; // Compute averages
 			});
 
 			aggregatedData.push(avgEntry);
@@ -160,7 +161,7 @@ export async function GET() {
 		console.log(aggregatedData.length)
 	}
 
-	return new NextResponse(JSON.stringify(aggregatedStations), { status: 200 })
+	return new NextResponse(JSON.stringify(data), { status: 200 })
 }
 
 export async function POST(req: Request) {
@@ -171,14 +172,14 @@ export async function POST(req: Request) {
 	const data: WeatherPayload = await req.json()
 	const prisma = new PrismaClient();
 
-	const time = new Date()
 	for (const station of data.stations) {
+		console.log(station)
 		await prisma.weatherData.create({
 			data: {
 				latitude: station.latitude,
 				longitude: station.longitude,
 				stationId: station.id,
-				pressure: station.pressure,
+				pressure: Math.random() * (900 - 600) + 600, // 600-900 Pa (very low compared to Earth)
 				temperature: station.temperature,
 				humidity: station.humidity,
 				co2: Math.random() * (960000 - 950000) + 950000, // 95-96% CO2 (in ppm)
@@ -194,7 +195,7 @@ export async function POST(req: Request) {
 				angVelX: station.angVelocity.x,
 				angVelY: station.angVelocity.y,
 				angVelZ: station.angVelocity.z,
-				timeTaken: new Date(time.getMilliseconds()-station.timeOffset),
+				timeTaken: new Date(),
 			}
 		}).then(() => {
 			console.log("Data saved for station " + station.id)
