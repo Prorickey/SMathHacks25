@@ -18,16 +18,24 @@ export default function Home() {
 	const [selectedNode, setSelectedNode] = useState<WeatherStation | null>(null);
 	const [data, setData] = useState<WeatherStation[]>([]);
 
-	const fetchData = async () => {
-		const dat = await fetch("/api").then((res) => res.json())
-		setData(dat)
-		const node = dat.find((node: WeatherStation) => node.id == selectedNode?.id)
-		setSelectedNode(node || dat[0]);
-	}
-
 	useEffect(() => {
-		setTimeout(fetchData, 2000)
-	}, [selectedNode]);
+		const fetchData = () => {
+			fetch("/api")
+				.then((res) => res.json())
+				.then((dat) => {
+					setData(dat);
+					setSelectedNode((prevNode) => {
+						return dat.find((node: WeatherStation) => node.id === prevNode?.id) || dat[0];
+					});
+				});
+		};
+
+		fetchData(); // Fetch immediately on mount
+
+		const interval = setInterval(fetchData, 2000); // Fetch every 2 seconds
+
+		return () => clearInterval(interval); // Cleanup interval on unmount
+	}, []); // Empty dependency array ensures it runs only once on mount
 
 	const [navbarOpen, setNavbarOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<string>("station");

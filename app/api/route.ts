@@ -158,10 +158,9 @@ export async function GET() {
 			weatherData: aggregatedData
 		});
 
-		console.log(aggregatedData.length)
 	}
 
-	return new NextResponse(JSON.stringify(aggregatedStations), { status: 200 })
+	return new NextResponse(JSON.stringify(data), { status: 200 })
 }
 
 export async function POST(req: Request) {
@@ -172,23 +171,63 @@ export async function POST(req: Request) {
 	const data: WeatherPayload = await req.json()
 	const prisma = new PrismaClient();
 
-	for (const station of data.stations) {
-		console.log(station)
+	// TODO: Remove this if we ever have more than 1 station
+	if(data.stations.length != 1) return new NextResponse("We only have 1 real station, stop lying", { status: 269 });
+	const station = data.stations[0];
+	await prisma.weatherData.create({
+		data: {
+			latitude: station.latitude,
+			longitude: station.longitude,
+			stationId: station.id,
+			pressure: Math.random() * (900 - 600) + 600, // 600-900 Pa (very low compared to Earth)
+			temperature: station.temperature,
+			humidity: station.humidity,
+			co2: Math.random() * (960000 - 950000) + 950000, // 95-96% CO2 (in ppm)
+			dust: Math.random() * (1.5 - 0.1) + 0.1, // Arbitrary dust levels (scaled 0.1-1.5 for variability)
+			light: Math.random() * (600 - 200) + 200, // Solar radiation in W/m² (Mars gets ~200-600 W/m²)
+			wind: Math.random() * 50, // Mars wind speeds range from 2-50 m/s
+			uv: station.uv,
+			ir: station.ir,
+			moisture: station.moisture,
+			accelX: station.accel.x,
+			accelY: station.accel.y,
+			accelZ: station.accel.z,
+			angVelX: station.angVelocity.x,
+			angVelY: station.angVelocity.y,
+			angVelZ: station.angVelocity.z,
+			timeTaken: new Date(),
+		}
+	}).then(() => {
+		console.log("Data saved for station " + station.id)
+	}).catch((error) => {
+		console.error(error.stack)
+	})
+
+	for(let i = 2; i < 7; i++) {
+		const stationId = `STATION_${i}`
+		const stationData = await prisma.weatherData.findFirst({
+			where: {
+				stationId: stationId,
+			}
+		})
+
+		console.log(stationData)
+
 		await prisma.weatherData.create({
 			data: {
-				latitude: station.latitude,
-				longitude: station.longitude,
-				stationId: station.id,
+				latitude: stationData?.latitude || 0.1,
+				longitude: stationData?.longitude || 0.1,
+				stationId: stationId,
 				pressure: Math.random() * (900 - 600) + 600, // 600-900 Pa (very low compared to Earth)
-				temperature: station.temperature,
-				humidity: station.humidity,
+				temperature: station.temperature + (Math.random()*10) - 5,
+				humidity: station.humidity + (Math.random()*10) - 5,
 				co2: Math.random() * (960000 - 950000) + 950000, // 95-96% CO2 (in ppm)
 				dust: Math.random() * (1.5 - 0.1) + 0.1, // Arbitrary dust levels (scaled 0.1-1.5 for variability)
 				light: Math.random() * (600 - 200) + 200, // Solar radiation in W/m² (Mars gets ~200-600 W/m²)
 				wind: Math.random() * 50, // Mars wind speeds range from 2-50 m/s
-				uv: station.uv,
-				ir: station.ir,
-				moisture: station.moisture,
+				uv: station.uv + (Math.random()*2) - 1,
+				ir: station.ir + (Math.random()*100) - 50,
+				moisture: station.moisture + (Math.random()*10) - 5,
 				accelX: station.accel.x,
 				accelY: station.accel.y,
 				accelZ: station.accel.z,
