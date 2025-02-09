@@ -174,6 +174,7 @@ export async function POST(req: Request) {
 	// TODO: Remove this if we ever have more than 1 station
 	if(data.stations.length != 1) return new NextResponse("We only have 1 real station, stop lying", { status: 269 });
 	const station = data.stations[0];
+	// We simulate variables that we did not recieve sensors in time for
 	await prisma.weatherData.create({
 		data: {
 			latitude: station.latitude,
