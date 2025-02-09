@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Station {
-  id   String @unique @default(cuid())
+  id   String @unique
   name String
 
   weatherData WeatherData[]
@@ -35,6 +35,9 @@ model WeatherData {
   co2         Float
   dust        Float
   wind        Float
+  uv          Float
+  ir          Float
+  moisture    Float
   light       Float
   accelX      Float
   accelY      Float
