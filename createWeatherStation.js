@@ -1,4 +1,7 @@
 import {PrismaClient} from "@prisma/client";
+import { config } from "dotenv";
+
+config()
 
 // Fill out this data with the information you want to insert
 const data = {
@@ -14,4 +17,35 @@ const prisma = new PrismaClient();
 	})
 
 	console.log(res)
+
+	const start = new Date().getMilliseconds()
+	for(let i = 0; i < 10000; i++) {
+		await prisma.weatherData.create({
+			data: {
+				stationId: res.id,
+
+				latitude: 0.1,
+				longitude: 0.1,
+				wind: Math.random() * 50, // Mars wind speeds range from 2-50 m/s
+			
+				pressure: Math.random() * (900 - 600) + 600, // 600-900 Pa (very low compared to Earth)
+				temperature: Math.random() * (-20 - (-120)) + (-120), // -120 to -20°C
+				humidity: Math.random() * (0.1 - 0.001) + 0.001, // 0.001% to 0.1% (extremely dry)
+				co2: Math.random() * (960000 - 950000) + 950000, // 95-96% CO2 (in ppm)
+				dust: Math.random() * (1.5 - 0.1) + 0.1, // Arbitrary dust levels (scaled 0.1-1.5 for variability)
+				light: Math.random() * (600 - 200) + 200, // Solar radiation in W/m² (Mars gets ~200-600 W/m²)
+			
+				accelX: Math.random() * (0.05 - (-0.05)) + (-0.05), // Minimal movement in g's
+				accelY: Math.random() * (0.05 - (-0.05)) + (-0.05),
+				accelZ: Math.random() * (0.38 - 0.37) + 0.37, // Mars gravity ~0.38g
+			
+				angVelX: Math.random() * (0.1 - (-0.1)) + (-0.1), // Small angular velocities
+				angVelY: Math.random() * (0.1 - (-0.1)) + (-0.1),
+				angVelZ: Math.random() * (0.1 - (-0.1)) + (-0.1),
+			
+				timeTaken: new Date(start + (i*5000)).toISOString() // Current timestamp in ISO format
+			}
+			
+		})
+	}
 })();
